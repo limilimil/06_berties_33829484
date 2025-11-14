@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Search result of <%=shopData.shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1><%=shopData.shopName%> Shop</h1>
+    <h2>Here are the books that we sell:</h2>
+    <!-- Inserts search results as a list -->
+    <ul>
+      <% console.log(result) %>
+      <% for (let i = 0; i < result.length; i++) { %>
+      <li><%=result[i].name%>, £<%=result[i].price%></li>
+      <% } %>
+    </ul>
+  </body>
+</html>
