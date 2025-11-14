@@ -7,6 +7,7 @@
   <body>
     <h1><%=shopData.shopName%> Shop</h1>
     <h2>Here are the books that we sell:</h2>
+    <!-- List of books retrieved from the database -->
     <ul>
       <% for (let i = 0; i < availableBooks.length; i++) { %>
       <li><%=availableBooks[i].name%>, £<%=availableBooks[i].price%></li>
