@@ -2,4 +2,14 @@
 
 USE berties_books;
 
-INSERT INTO books (name, price)VALUES('Brighton Rock', 20.25),('Brave New World', 25.00), ('Animal Farm', 12.99) ;
+INSERT INTO books (name, price) 
+VALUES ('Brighton Rock', 20.25), 
+('Brave New World', 25.00), 
+('Animal Farm', 12.99);
+
+INSERT INTO books (name, price) 
+VALUES ('Slaughterhouse Five', 21.00), 
+('Flowers for Algernon', 18.50), 
+('The Dispossessed', 28.60), 
+('The Murder of Roger Ackroyd', 15.00),
+('Murder on the Orient Express', 16.00);
