@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS books (
     price  DECIMAL(5, 2),
     PRIMARY KEY(id));
 
+# Stores the user accounts
 CREATE TABLE IF NOT EXISTS users (
   id INT NOT NULL AUTO_INCREMENT,
   username VARCHAR(30) NOT NULL UNIQUE,
@@ -18,6 +19,15 @@ CREATE TABLE IF NOT EXISTS users (
   last_name VARCHAR(50),
   email VARCHAR(120) NOT NULL UNIQUE,
   hashed_password CHAR(60) NOT NULL,
+  PRIMARY KEY (id));
+
+# Stores the log of login attempts 
+CREATE TABLE IF NOT EXISTS login_audit (
+  id INT NOT NULL AUTO_INCREMENT,
+  username VARCHAR(30),
+  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ip VARCHAR(45),
+  success BOOLEAN,
   PRIMARY KEY (id));
 
 # Create the application user

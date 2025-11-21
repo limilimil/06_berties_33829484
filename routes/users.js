@@ -3,6 +3,16 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt');
 
+// Adds login attempts to the login_audit database
+function auditLogin (username, ip, success){
+    let sqlquery = "INSERT INTO login_audit (username, ip, success) VALUES (?,?,?)";
+    db.query(sqlquery, [username, ip, success], (err, result) => {
+        if(err) {
+            console.error(err);
+        }
+    });
+}
+
 // Handle registration routes
 router.get('/register', function (req, res, next) {
     res.render('register.ejs', { errors: {}, formData: {} });
@@ -51,31 +61,47 @@ router.get('/login', function (req, res, next) {
     res.render('login.ejs');
 });
 
+// Route for logging in the user
 router.post('/loggedin', function (req, res, next) {
     let sqlquery = "SELECT username, hashed_password FROM users WHERE username = ?";
     db.query(sqlquery, req.body.username, (err, result) => {
         if (err) {
+            auditLogin(req.body.username, req.ip, 0);
             next(err);
         } else {
             if (result.length == 0) {
+                auditLogin(req.body.username, req.ip, 0);
                 res.send("Login failed: Incorrect username or password");
             } else {
                 const hashedPassword = result[0].hashed_password;
                 bcrypt.compare(req.body.password, hashedPassword, function(err, match) {
                     if (err) {
-                    // TODO: Handle error
+                        auditLogin(req.body.username, req.ip, 0);
+                        res.send("Error logging in. Please try again later.");
                     }
                     else if (match == true) {
-                        // TODO: Send message
+                        auditLogin(req.body.username, req.ip, 1);
                         res.send("Logged in successfully");
                     }
                     else {
-                    // TODO: Send message
-                        res.send("Incorrect username or password");
+                        auditLogin(req.body.username, req.ip, 0);
+                        res.send("Login failed: Incorrect username or password");
                     }
                 });
             }
         }
+    });
+});
+
+// Route for viewing the log of attempted logins
+router.get('/audit', function(req, res, next) {
+    let sqlquery = "SELECT * FROM login_audit"; // query database to get all the books
+    // execute sql query
+    db.query(sqlquery, (err, result) => {
+        if (err) {
+            next(err);
+        }
+        res.render('audit.ejs', {audit: result});
     });
 });
 

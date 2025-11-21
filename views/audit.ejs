@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Login Audit Log <%=shopData.shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1><%=shopData.shopName%> Login Audit Log</h1>
+    <h2>A log of all login attempts</h2>
+    <!-- Table of login attempts retrieved from the database -->
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>IP</th>
+          <th>Timestamp</th>
+          <th>Success</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = 0; i < audit.length; i++) { %>
+          <tr>
+            <td><%= audit[i].id %></td>
+            <td><%= audit[i].username %></td>
+            <td><%= audit[i].ip %></td>
+            <td><%= audit[i].timestamp %></td>
+            <td><%= audit[i].success %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </body>
