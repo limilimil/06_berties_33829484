@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <title>List of Users <%=shopData.shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1><%=shopData.shopName%> Users</h1>
+    <h2>A list of our registered users</h2>
+    <!-- List of users retrieved from the database -->
+    <ul>
+      <% for (let i = 0; i < registeredUsers.length; i++) { %>
+      <li><%=registeredUsers[i].username%></li>
+      <% } %>
+    </ul>
+  </body>
