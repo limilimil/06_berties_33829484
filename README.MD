@@ -34,9 +34,5 @@ Server side validation is performed on user input for the following fields:
 * Last name (optional) - Between 1-50 characters and letters only
 Note: First and last name are not required as users that want to use basic cataloguing features should not need to input sensitive information.
 
-### Login
-* Username - Between 5-30 characters and alphanumeric characters only
-* Password - Between 8-64 characters
-
 ## Sanitisation
 Email, username, first and last name are sanitised to prevent XSS attacks. Additionally the book search results and bookadded are also sanitised to prevent this.

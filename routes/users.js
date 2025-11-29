@@ -95,47 +95,36 @@ router.get('/login', function (req, res, next) {
 });
 
 // Route for logging in the user
-router.post('/loggedin', 
-    [
-        check('username').trim().isLength({ min: 5, max: 30}).withMessage("Username must be between 5 and 30 characters").isAlphanumeric().withMessage("Username must be letters and numbers only"),
-        check('password').isLength({ min: 8, max: 64}).withMessage("Password must be between 8 and 64 characters"),
-    ],
-    function (req, res, next) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.render('./login');
-        }
-        else {
-            let sqlquery = "SELECT username, hashed_password FROM users WHERE username = ?";
-            db.query(sqlquery, req.body.username, (err, result) => {
-                if (err) {
-                    auditLogin(req.body.username, req.ip, 0);
-                    next(err);
-                } else {
-                    if (result.length == 0) {
+router.post('/loggedin', function (req, res, next) {
+    let sqlquery = "SELECT username, hashed_password FROM users WHERE username = ?";
+    db.query(sqlquery, req.body.username, (err, result) => {
+        if (err) {
+            auditLogin(req.body.username, req.ip, 0);
+            next(err);
+        } else {
+            if (result.length == 0) {
+                auditLogin(req.body.username, req.ip, 0);
+                res.send("Login failed: Incorrect username or password");
+            } else {
+                const hashedPassword = result[0].hashed_password;
+                bcrypt.compare(req.body.password, hashedPassword, function(err, match) {
+                    if (err) {
+                        auditLogin(req.body.username, req.ip, 0);
+                        res.send("Error logging in. Please try again later.");
+                    }
+                    else if (match == true) {
+                        auditLogin(req.body.username, req.ip, 1);
+                        req.session.userId = req.body.username;
+                        res.send("Logged in successfully");
+                    }
+                    else {
                         auditLogin(req.body.username, req.ip, 0);
                         res.send("Login failed: Incorrect username or password");
-                    } else {
-                        const hashedPassword = result[0].hashed_password;
-                        bcrypt.compare(req.body.password, hashedPassword, function(err, match) {
-                            if (err) {
-                                auditLogin(req.body.username, req.ip, 0);
-                                res.send("Error logging in. Please try again later.");
-                            }
-                            else if (match == true) {
-                                auditLogin(req.body.username, req.ip, 1);
-                                req.session.userId = req.body.username;
-                                res.send("Logged in successfully");
-                            }
-                            else {
-                                auditLogin(req.body.username, req.ip, 0);
-                                res.send("Login failed: Incorrect username or password");
-                            }
-                        });
                     }
-                }
-            });
+                });
+            }
         }
+    });
 });
 
 // Route for logging out
