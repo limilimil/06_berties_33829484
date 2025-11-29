@@ -15,3 +15,10 @@ This project uses the dotenv module to securely store database credentials in a 
 
 ## Audit
 The audit feature logs every login attempt, successful or unsuccessful into the login_audit MySQL table using the auditLogin() helper function. Each entry records the username, timestamp, IP address, and whether the attempt succeeded. The /audit route retrieves all stored logs and renders them in a table within audit.ejs for easy viewing.
+
+## Access Control
+Users must be logged in to access the following pages:
+* User List - Prevent unprotected access to registration data
+* Audit - Prevent unauthorised access to sensitive administrative data
+* Logout - Users need to login in order to logout
+* Addbook & bookadded - To reduce spam and maintain content quality
