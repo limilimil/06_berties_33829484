@@ -1,28 +1,86 @@
+
+
 <!doctype html>
 <html>
   <head>
-    <title>Register for <%=shopData.shopName%></title>
-    <link rel="stylesheet"  type="text/css" href="/main.css" />
+    <title>Register for <%= shopData.shopName %></title>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
   </head>
   <body>
-    <h1>Register for <%=shopData.shopName%></h1>
+    <h1>Register for <%= shopData.shopName %></h1>
+
     <form method="POST" action="registered">
       <!-- values are inserted only if they exist from previous user input -->
-      <p>First name: <input id="first" type="text" name="first" value="<%= formData?.first || '' %>" minlength="1" maxlength="50"/></p>
-      <p>Last name: <input id="last" type="text" name="last" value="<%= formData?.last || '' %>" minlength="1" maxlength="50"/></p>
-      <p>Email: <input id="email" type="email" name="email" value="<%= formData?.email || '' %>" maxlength="120" required />
-        <!-- Insert email error message -->
-        <% if (errors?.email) { %>
-          <span><%= errors.email %></span>
-        <% } %>
-      </p>
-      <p>Username: <input id="username" type="text" name="username" value="<%= formData?.username || '' %>" minlength="3" maxlength="30" required />
-        <!-- Insert username error message -->
-        <% if (errors?.username) { %>
-          <span><%= errors.username %></span>
-        <% } %>
-      </p>
-      <p>Password: <input id="password" type="password" name="password" minlength="8" maxlength="64" required /></p>
+      <!-- First Name -->
+      <div class="form-field">
+        <label for="first">First name:</label>
+        <input id="first" type="text" name="first" value="<%= formData?.first || '' %>" minlength="1" maxlength="50" />
+        <!-- Insert first name error messages -->
+        <div class="error-messages">
+          <% if (errors?.first) { %>
+            <% errors.first.forEach(msg => { %>
+              <p><%= msg %></p>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="form-field">
+        <label for="last">Last name:</label>
+        <input id="last" type="text" name="last" value="<%= formData?.last || '' %>" minlength="1" maxlength="50" />
+        <!-- Insert last name error messages -->
+        <div class="error-messages">
+          <% if (errors?.last) { %>
+            <% errors.last.forEach(msg => { %>
+              <p><%= msg %></p>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-field">
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" value="<%= formData?.email || '' %>" maxlength="120" required />
+        <!-- Insert email error messages -->
+        <div class="error-messages">
+          <% if (errors?.email) { %>
+            <% errors.email.forEach(msg => { %>
+              <p><%= msg %></p>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="form-field">
+        <label for="username">Username:</label>
+        <input id="username" type="text" name="username" value="<%= formData?.username || '' %>" minlength="3" maxlength="30" required />
+      <!-- Insert username error messages -->
+        <div class="error-messages">
+          <% if (errors?.username) { %>
+            <% errors.username.forEach(msg => { %>
+              <p><%= msg %></p>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-field">
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password" minlength="8" maxlength="64" required />
+      <!-- Insert password error messages -->
+        <div class="error-messages">
+          <% if (errors?.password) { %>
+            <% errors.password.forEach(msg => { %>
+              <p><%= msg %></p>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
       <input type="submit" value="Register" />
     </form>
   </body>

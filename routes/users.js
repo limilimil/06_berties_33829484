@@ -1,7 +1,10 @@
 // Create a new router
 const express = require("express");
 const router = express.Router();
+const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
 
 const redirectLogin = (req, res, next) => {
     if (!req.session.userId ) {
@@ -26,32 +29,54 @@ router.get('/register', function (req, res, next) {
     res.render('register.ejs', { errors: {}, formData: {} });
 });
 
-router.post('/registered', function (req, res, next) {
-    // saving data in database
-    const saltRounds = 10;
-    const plainPassword = req.body.password;
-    const formData = {
-        first: req.body.first,
-        last: req.body.last,
-        email: req.body.email,
-        username: req.body.username
-    };
-    req.formData = formData;
-    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
-        // Store hashed password in your database.
-        let sqlquery = "INSERT INTO users (username, first_name, last_name, email, hashed_password) VALUES (?,?,?,?,?)";
-        let newuser = [req.body.username, req.body.first, req.body.last, req.body.email, hashedPassword]
-        db.query(sqlquery, newuser, (err, result) => {
-            if (err) {
-                next(err);
-            } else {
-                // Message sent to user
-                result = 'Hello '+ req.body.first + ' '+ req.body.last +' you are now registered!  We will send an email to you at ' + req.body.email;
-                result += 'Your password is: '+ req.body.password +' and your hashed password is: '+ hashedPassword;
-                res.send(result);
+router.post('/registered', 
+    [
+        check('email').isEmail().withMessage("Please enter a valid email address").trim().isLength({ min: 5, max: 120 }).withMessage("Email address invalid"), 
+        check('username').trim().isLength({ min: 5, max: 30}).withMessage("Username must be between 5 and 30 characters").isAlphanumeric().withMessage("Username must be letters and numbers only"),
+        check('password').isLength({ min: 8, max: 64}).withMessage("Password must be between 8 and 64 characters"),
+        check('first').optional({ values: 'falsy' }).trim().isLength({ min: 1, max: 50 }).withMessage("First name cannot be over 50 characters").isAlpha().withMessage("Please enter letters only"),
+        check('last').optional({ values: 'falsy' }).trim().isLength({ min: 1, max: 50 }).withMessage("Last name cannot be over 50 characters").isAlpha().withMessage("Please enter letters only")
+    ], 
+    function (req, res, next) {
+        const formData = {
+            first: req.sanitize(req.body.first),
+            last: req.sanitize(req.body.last),
+            email: req.sanitize(req.body.email),
+            username: req.sanitize(req.body.username)
+        };
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            // Retrieves relevant error messages to be displayed on the user interface
+            const errorMessages = { first: [], last: [], email: [], username: [], password: [] };
+            for (let i = 0; i < errors.errors.length; i++) {
+                let inputField = errors.errors[i].path
+                if(errorMessages[inputField]) { // Only includes error messages for existing input types
+                    errorMessages[inputField].push(errors.errors[i].msg);
+                }
             }
-        });
-    });
+            // Loads the registration page again with error messages and previous inputs except password
+            res.render('./register', { errors: errorMessages, formData: formData });
+        }
+        else { 
+            // saving data in database
+            const plainPassword = req.body.password;
+            req.formData = formData;
+            bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+                // Store hashed password in your database.
+                let sqlquery = "INSERT INTO users (username, first_name, last_name, email, hashed_password) VALUES (?,?,?,?,?)";
+                let newuser = [formData.username, formData.first, formData.last, formData.email, hashedPassword]
+                db.query(sqlquery, newuser, (err, result) => {
+                    if (err) {
+                        next(err);
+                    } else {
+                        // Message sent to user
+                        result = 'Hello '+ formData.first + ' '+ formData.last +' you are now registered!  We will send an email to you at ' + formData.email;
+                        res.send(result);
+                    }
+                });
+            });
+        }
 });
 
 router.get('/list', redirectLogin, function(req, res, next) {
@@ -70,38 +95,50 @@ router.get('/login', function (req, res, next) {
 });
 
 // Route for logging in the user
-router.post('/loggedin', function (req, res, next) {
-    let sqlquery = "SELECT username, hashed_password FROM users WHERE username = ?";
-    db.query(sqlquery, req.body.username, (err, result) => {
-        if (err) {
-            auditLogin(req.body.username, req.ip, 0);
-            next(err);
-        } else {
-            if (result.length == 0) {
-                auditLogin(req.body.username, req.ip, 0);
-                res.send("Login failed: Incorrect username or password");
-            } else {
-                const hashedPassword = result[0].hashed_password;
-                bcrypt.compare(req.body.password, hashedPassword, function(err, match) {
-                    if (err) {
-                        auditLogin(req.body.username, req.ip, 0);
-                        res.send("Error logging in. Please try again later.");
-                    }
-                    else if (match == true) {
-                        auditLogin(req.body.username, req.ip, 1);
-                        req.session.userId = req.body.username;
-                        res.send("Logged in successfully");
-                    }
-                    else {
+router.post('/loggedin', 
+    [
+        check('username').trim().isLength({ min: 5, max: 30}).withMessage("Username must be between 5 and 30 characters").isAlphanumeric().withMessage("Username must be letters and numbers only"),
+        check('password').isLength({ min: 8, max: 64}).withMessage("Password must be between 8 and 64 characters"),
+    ],
+    function (req, res, next) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.render('./login');
+        }
+        else {
+            let sqlquery = "SELECT username, hashed_password FROM users WHERE username = ?";
+            db.query(sqlquery, req.body.username, (err, result) => {
+                if (err) {
+                    auditLogin(req.body.username, req.ip, 0);
+                    next(err);
+                } else {
+                    if (result.length == 0) {
                         auditLogin(req.body.username, req.ip, 0);
                         res.send("Login failed: Incorrect username or password");
+                    } else {
+                        const hashedPassword = result[0].hashed_password;
+                        bcrypt.compare(req.body.password, hashedPassword, function(err, match) {
+                            if (err) {
+                                auditLogin(req.body.username, req.ip, 0);
+                                res.send("Error logging in. Please try again later.");
+                            }
+                            else if (match == true) {
+                                auditLogin(req.body.username, req.ip, 1);
+                                req.session.userId = req.body.username;
+                                res.send("Logged in successfully");
+                            }
+                            else {
+                                auditLogin(req.body.username, req.ip, 0);
+                                res.send("Login failed: Incorrect username or password");
+                            }
+                        });
                     }
-                });
-            }
+                }
+            });
         }
-    });
 });
 
+// Route for logging out
 router.get('/logout', redirectLogin, (req,res) => {
     req.session.destroy(err => {
         if (err) {
@@ -131,12 +168,12 @@ function dupEntryErrorHandler(err, req, res, next) {
         // Attempts to retrieve duplicate values
         sqlquery = "SELECT username, email FROM users WHERE username = ? OR email = ?"; 
         db.query(sqlquery, [req.body.username, req.body.email], (err, result) => {
-            const errors = {};
+            const errors = { username: [], email: [] };
             if (result.length) {
                 // Adds the relevant error message
                 result.forEach(row => {
-                    if (row.username === req.body.username) errors.username = "Username already exists";
-                    if (row.email === req.body.email) errors.email = "Email already exists";
+                    if (row.username === req.body.username) errors.username.push("Username already exists");
+                    if (row.email === req.body.email) errors.email.push("Email already exists");
                 });
                 // Renders the register page with the users inputs, excluding password for security
                 res.render('register.ejs', {errors, formData});

@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require ('express');
 const session = require ('express-session');
+const expressSanitizer = require('express-sanitizer');
 const ejs = require('ejs');
 const path = require('path');
 const mysql = require('mysql2');
@@ -29,6 +30,8 @@ app.use(session({
     }
 }));
 
+// Create an input sanitizer
+app.use(expressSanitizer());
 
 // Define our application-specific data
 app.locals.shopData = {shopName: "Bertie's Books"};

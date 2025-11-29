@@ -52,3 +52,35 @@ a:link {
     text-decoration: none;
     padding:5px;
   }
+
+.form-field {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 5px;
+}
+
+.form-field input {
+  width: 300px;
+  max-width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.error-messages {
+  min-height: 40px;
+  margin-top: 5px;
+}
+
+.error-messages p {
+  color: red;
+  font-size: 13px;
+  margin: 2px 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
