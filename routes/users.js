@@ -102,6 +102,16 @@ router.post('/loggedin', function (req, res, next) {
     });
 });
 
+router.get('/logout', redirectLogin, (req,res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.redirect('./')
+        }
+        res.send('you are now logged out. <a href='+'/'+'>Home</a>');
+    });
+});
+
+
 // Route for viewing the log of attempted logins
 router.get('/audit', redirectLogin, function(req, res, next) {
     let sqlquery = "SELECT * FROM login_audit"; // query database to get all the books
