@@ -1,5 +1,6 @@
 // Create a new router
 const express = require("express");
+const { check, validationResult } = require('express-validator');
 const router = express.Router();
 
 const redirectLogin = (req, res, next) => {
@@ -42,19 +43,31 @@ router.get('/addbook', redirectLogin, function(req, res, next) {
     res.render('addbook.ejs');
 });
 
-router.post('/bookadded', redirectLogin, function (req, res, next) {
-    // saving data in database
-    let sqlquery = "INSERT INTO books (name, price) VALUES (?,?)";
-    // execute sql query
-    let newrecord = [req.sanitize(req.body.name), req.sanitize(req.body.price)];
-    db.query(sqlquery, newrecord, (err, result) => {
-        if (err) {
-            next(err);
+router.post('/bookadded', 
+    [
+        check('name').notEmpty(),
+        check('price').isFloat({ min: 0.1, max: 9999.99 })
+    ],
+    redirectLogin, 
+    function (req, res, next) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.render('./addbook');
         }
-        else
-            // Message sent to user
-            res.send(' This book is added to database, name: '+ req.sanitize(req.body.name) + ' price '+ req.sanitize(req.body.price));
-    });
+        else {
+            // saving data in database
+            let sqlquery = "INSERT INTO books (name, price) VALUES (?,?)";
+            // execute sql query
+            let newrecord = [req.sanitize(req.body.name), req.sanitize(req.body.price)];
+            db.query(sqlquery, newrecord, (err, result) => {
+                if (err) {
+                    next(err);
+                }
+                else
+                    // Message sent to user
+                    res.send(' This book is added to database, name: '+ req.sanitize(req.body.name) + ' price '+ req.sanitize(req.body.price));
+            });
+        }
 });
 
 router.get('/bargainbooks', function(req, res, next) {
