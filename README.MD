@@ -40,3 +40,24 @@ Note: First and last name are not required as users that want to use basic catal
 
 ## Sanitisation
 Email, username, first and last name are sanitised to prevent XSS attacks. Additionally the book search results and bookadded are also sanitised to prevent this.
+
+## Books API
+
+This API provides access to a collection of books stored in the database.  
+It supports filtering, searching, and sorting through query parameters.
+
+### Endpoints
+
+#### GET `/books`
+
+Retrieve a list of books from the database.
+
+#### Query Parameters
+
+| Parameter   | Type   | Description                                                                 | Example                |
+|-------------|--------|-----------------------------------------------------------------------------|------------------------|
+| `search`    | string | Filter books by name (partial match).                                       | `/books?search=Brighton`  |
+| `minprice`  | number | Filter books with price greater than or equal to the given value.           | `/books?minprice=10`   |
+| `maxprice`  | number | Filter books with price less than or equal to the given value.              | `/books?maxprice=50`   |
+| `sort`      | string | Sort results by `name` or `price`.                                         | `/books?sort=price`    |
+
