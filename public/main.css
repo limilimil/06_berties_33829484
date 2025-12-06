@@ -84,3 +84,27 @@ a:link {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.weather-container {
+    margin-top: 20px;
+}
+
+.icon-temp {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.icon-temp img {
+    width: 100px;
+    height: 100px;
+}
+
+.main-temp {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.details p {
+    margin: 3px 0;
+}

@@ -45,7 +45,6 @@ router.post('/registered',
             username: req.sanitize(req.body.username)
         };
         const errors = validationResult(req);
-
         if (!errors.isEmpty()) {
             // Retrieves relevant error messages to be displayed on the user interface
             const errorMessages = { first: [], last: [], email: [], username: [], password: [] };

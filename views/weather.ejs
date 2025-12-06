@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Check the weather <%=shopData.shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1>Check the weather <%=shopData.shopName%></h1>
+    <form action="weather" method="GET">
+      <p>Select a city:</p>
+      <input id="city" type="text" name="city">
+      <input type="submit" value="Submit" >
+    </form>
+
+    <% if (error) { %>
+      <div class="error">
+        <strong>Oops:</strong> <%= error %>
+      </div>
+    <% } else if (weather) { %>
+      <h2><%= weather.name %><%= weather.country ? ', ' + weather.country : '' %></h2>
+      <div class="icon-temp">
+        <% if (weather.icon) { %>
+          <img src="<%= weather.icon %>" alt="Weather icon">
+        <% } %>
+        <div class="main-temp"><%= (weather.temp !== undefined) ? weather.temp + '°C' : 'N/A' %></div>
+      </div>
+      <div class="details">
+        <p>Feels like <%= (weather.feelsLike !== undefined) ? weather.feelsLike + '°C' : 'N/A' %> | <%= weather.description || 'N/A' %> | <%= weather.windSpeed %></p>
+        <p>Humidity: <%= (weather.humidity !== undefined) ? weather.humidity + '%' : 'N/A' %> | Visibility: <%= (weather.visibility !== undefined) ? weather.visibility + 'm' : 'N/A' %></p>
+      </div>
+    <% } else { %>
+      <p>No weather data to display.</p>
+    <% } %>
+
+  </body>
+</html>
