@@ -5,7 +5,7 @@ const router = express.Router();
 const request = require('request');
 
 
-// Returns a description of the wind speed based on the Beaufort scale
+// Return a description of the wind speed based on the Beaufort scale
 function beaufortWindDescription(speed) {
     if (speed === undefined || speed === null) return "Unknown";
     if (speed < 0.3) return "Calm";
