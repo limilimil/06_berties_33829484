@@ -1,1 +1,9 @@
 home=http://www.doc.gold.ac.uk/usr/450/
+about=http://www.doc.gold.ac.uk/usr/450/about
+register=http://www.doc.gold.ac.uk/usr/450/patients/register/
+patients_portal=http://www.doc.gold.ac.uk/usr/450/patients/
+appointments_database=http://www.doc.gold.ac.uk/usr/450/doctors/appointments
+patients_database=http://www.doc.gold.ac.uk/usr/450/doctors/patients
+admin_dashboard=http://www.doc.gold.ac.uk/usr/450/doctors/dashboard
+appointment_record=http://www.doc.gold.ac.uk/usr/450/doctors/appointments/1
+patient_record=http://www.doc.gold.ac.uk/usr/450/doctors/patients/1
